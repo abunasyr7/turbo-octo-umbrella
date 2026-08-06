@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 )
@@ -11,7 +10,6 @@ const (
 	CHUNKS = 8
 )
 
-var ErrEmptySlice = errors.New("cannot find maximum of an empty slice")
 
 // generateRandomElements generates random elements.
 func generateRandomElements(size int) []int {
@@ -30,7 +28,18 @@ func generateRandomElements(size int) []int {
 
 // maximum returns the maximum number of elements.
 func maximum(data []int) int {
+	if len(data) == 0 {
+		return 0
+	}
 
+	max := data[0]
+
+	for _, v := range data[1:] {
+		if v > max {
+			max = v
+		}
+	}
+	return max
 }
 
 // maxChunks returns the maximum number of elements in a chunks.
