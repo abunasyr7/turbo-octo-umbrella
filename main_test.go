@@ -6,8 +6,8 @@ import (
 
 func TestGenerateRandoomElements(t *testing.T) {
 	tests := []struct {
-		name    string
-		size      int
+		name string
+		size int
 		want int
 	}{
 		{
@@ -31,8 +31,8 @@ func TestGenerateRandoomElements(t *testing.T) {
 			got := generateRandomElements(tt.size)
 			if got == nil {
 				t.Fatalf("generateRandomElements(%d) вернула nil, ожидался не-nil слайс", tt.size)
-			} 
-			
+			}
+
 			if len(got) != tt.want {
 				t.Errorf("len(got) = %d, want %d", len(got), tt.want)
 			}

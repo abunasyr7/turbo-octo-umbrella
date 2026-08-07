@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
+	"time"
 )
 
 const (
@@ -14,8 +15,6 @@ const (
 
 var ErrEmptySlice = errors.New("cannot find maximum of an empty slice")
 
-
-
 // generateRandomElements generates random elements.
 func generateRandomElements(size int) []int {
 	if size <= 0 {
@@ -24,7 +23,7 @@ func generateRandomElements(size int) []int {
 
 	result := make([]int, size)
 
-	for i :=0; i < size; i++ {
+	for i := 0; i < size; i++ {
 		result[i] = rand.Intn(100)
 	}
 
@@ -32,19 +31,20 @@ func generateRandomElements(size int) []int {
 }
 
 // maximum returns the maximum number of elements.
-func maximum(data []int) (int) {
+func maximum(data []int) int {
 	if len(data) == 0 {
 		return 0
 	}
 
-	max := data[0]
+	maxValue := data[0]
 
-	for _, v := range data[1:] {
-		if v > max {
-			max = v
+	for _, value := range data[1:] {
+		if value > maxValue {
+			maxValue = value
 		}
 	}
-	return max
+
+	return maxValue
 }
 
 // maxChunks returns the maximum number of elements in a chunks.
@@ -82,20 +82,23 @@ func maxChunks(data []int) int {
 
 	return maximum(maxes)
 
-
 }
 
 func main() {
-	fmt.Printf("Генерируем %d целых чисел", SIZE)
-	// ваш код здесь
+	fmt.Printf("Генерируем %d целых чисел\n", SIZE)
+	data := generateRandomElements(SIZE)
 
 	fmt.Println("Ищем максимальное значение в один поток")
-	// ваш код здесь
+	start := time.Now()
+	singleThreadMax := maximum(data)
+	singleThreadElapsed := time.Since(start).Microseconds()
 
-	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", max, elapsed)
+	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d µs\n", singleThreadMax, singleThreadElapsed)
 
-	fmt.Printf("Ищем максимальное значение в %d потоков", CHUNKS)
-	// ваш код здесь
+	fmt.Printf("Ищем максимальное значение в %d потоков\n", CHUNKS)
+	start = time.Now()
+	multiThreadMax := maxChunks(data)
+	multiThreadElapsed := time.Since(start).Microseconds()
 
-	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", max, elapsed)
+	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d µs\n", multiThreadMax, multiThreadElapsed)
 }
