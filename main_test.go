@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"testing"
 )
 
@@ -52,68 +51,59 @@ func TestMaximum(t *testing.T) {
 		name string
 		nums []int
 		want int
-		wantErr bool
-	} {
-		{
-			name: 	"simple slice",
-			nums:    []int{3, 7, 1, 9, 4},
-			want:    9,
-			wantErr: false,
-		}, 	
-		{
-			name:    "один элемент",
-			nums:    []int{42},
-			want:    42,
-			wantErr: false,
-		},
-		{
-			name:    "все элементы одинаковые",
-			nums:    []int{5, 5, 5, 5},
-			want:    5,
-			wantErr: false,
-		},
-		{
-			name:    "отрицательные числа",
-			nums:    []int{-10, -3, -7, -1},
-			want:    -1,
-			wantErr: false,
-		},
-		{
-			name:    "максимум в начале слайса",
-			nums:    []int{100, 2, 3},
-			want:    100,
-			wantErr: false,
-		},
-		{
-			name:    "пустой слайс",
-			nums:    []int{},
-			want:    0,
-			wantErr: true,
-		},
-		{
-			name:    "nil слайс",
-			nums:    nil,
-			want:    0,
-			wantErr: true,
-		},
+	}{
+		{name: "обычный слайс", nums: []int{3, 7, 1, 9, 4}, want: 9},
+		{name: "один элемент", nums: []int{42}, want: 42},
+		{name: "все элементы одинаковые", nums: []int{5, 5, 5, 5}, want: 5},
+		{name: "отрицательные числа", nums: []int{-10, -3, -7, -1}, want: -1},
+		{name: "максимум в начале слайса", nums: []int{100, 2, 3}, want: 100},
+		{name: "пустой слайс", nums: []int{}, want: 0},
+		{name: "nil слайс", nums: nil, want: 0},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := maximum(tt.nums)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("maximum(%v) error = %v, wantErr %v", tt.nums, err, tt.wantErr)
-			}
-
-			if tt.wantErr && !errors.Is(err, ErrEmptySlice) {
-				t.Errorf("maximum(%v) error = %v, ожидалась ErrEmptySlice", tt.nums, err)
-			}
-
-			if !tt.wantErr && got != tt.want {
+			got := maximum(tt.nums)
+			if got != tt.want {
 				t.Errorf("maximum(%v) = %d, want %d", tt.nums, got, tt.want)
 			}
 		})
 	}
 }
 
+func TestMaxChunks(t *testing.T) {
+	tests := []struct {
+		name string
+		nums []int
+		want int
+	}{
+		{name: "пустой слайс", nums: []int{}, want: 0},
+		{name: "один элемент", nums: []int{42}, want: 42},
+		{name: "элементов меньше, чем частей", nums: []int{3, 9, 1, 4}, want: 9},
+		{name: "элементов ровно столько, сколько частей", nums: []int{1, 2, 3, 4, 5, 6, 7, 8}, want: 8},
+		{
+			name: "длина не делится на CHUNKS нацело",
+			nums: []int{
+				1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+				11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+				999,
+			},
+			want: 999,
+		},
+		{
+			name: "большой слайс, максимум в середине",
+			nums: []int{5, 3, 8, 1, 9, 2, 100, 4, 6, 7, 3, 2, 1, 9, 8, 5},
+			want: 100,
+		},
+		{name: "отрицательные числа", nums: []int{-5, -3, -9, -1, -20, -100, -2, -4, -50}, want: -1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := maxChunks(tt.nums)
+			if got != tt.want {
+				t.Errorf("maxChunks(%v) = %d, want %d", tt.nums, got, tt.want)
+			}
+		})
+	}
+}

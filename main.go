@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"sync"
 )
 
 const (
@@ -31,9 +32,9 @@ func generateRandomElements(size int) []int {
 }
 
 // maximum returns the maximum number of elements.
-func maximum(data []int) (int, error) {
+func maximum(data []int) (int) {
 	if len(data) == 0 {
-		return 0, ErrEmptySlice
+		return 0
 	}
 
 	max := data[0]
@@ -43,12 +44,45 @@ func maximum(data []int) (int, error) {
 			max = v
 		}
 	}
-	return max, nil
+	return max
 }
 
 // maxChunks returns the maximum number of elements in a chunks.
 func maxChunks(data []int) int {
-	// ваш код здесь
+	if len(data) == 0 {
+		return 0
+	}
+
+	chunkSize := len(data) / CHUNKS
+
+	if chunkSize == 0 {
+		return maximum(data)
+	}
+
+	maxes := make([]int, CHUNKS)
+	var wg sync.WaitGroup
+
+	for i := 0; i < CHUNKS; i++ {
+		start := i * chunkSize
+		end := start + chunkSize
+
+		if i == CHUNKS-1 {
+			end = len(data)
+		}
+
+		wg.Add(1)
+
+		go func(chunk []int, idx int) {
+			defer wg.Done()
+			maxes[idx] = maximum(chunk)
+		}(data[start:end], i)
+	}
+
+	wg.Wait()
+
+	return maximum(maxes)
+
+
 }
 
 func main() {
